@@ -9,6 +9,17 @@ async function connectDB() {
     throw new Error("La variable MONGODB_URI no esta definida");
   }
 
+  if (mongoose.connection.readyState === 1) {
+    return;
+  }
+
+  if (mongoose.connection.readyState === 2) {
+    return new Promise((resolve, reject) => {
+      mongoose.connection.once("connected", resolve);
+      mongoose.connection.once("error", reject);
+    });
+  }
+
   await mongoose.connect(MONGODB_URI, {
     dbName: MONGODB_DB
   });

@@ -14,6 +14,15 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
 app.get("/", (req, res) => {
   res.render("home", {
     title: "Gestion de Productos",
@@ -55,6 +64,10 @@ app.use((error, req, res, next) => {
 
 const PORT = process.env.PORT || 3000;
 
+if (require.main === module) {
+  startServer();
+}
+
 async function startServer() {
   try {
     await connectDB();
@@ -67,4 +80,4 @@ async function startServer() {
   }
 }
 
-startServer();
+module.exports = app;
